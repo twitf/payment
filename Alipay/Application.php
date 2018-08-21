@@ -12,20 +12,20 @@ namespace Payment\Alipay;
 class Application
 {
     protected $config;
+    protected $params;
 
     public function __construct($config)
     {
         $this->config = $config;
-        $this->gateway = Support::baseUri($this->config->get('mode', 'normal'));
-        $this->payload = [
-            'app_id' => $this->config->get('app_id'),
+        $this->params = [
+            'app_id' => $config['app_id'],
             'method' => '',
             'format' => 'JSON',
             'charset' => 'utf-8',
             'sign_type' => 'RSA2',
             'version' => '1.0',
-            'return_url' => $this->config->get('return_url'),
-            'notify_url' => $this->config->get('notify_url'),
+            'return_url' => $config['return_url'],
+            'notify_url' => $config['notify_url'],
             'timestamp' => date('Y-m-d H:i:s'),
             'sign' => '',
             'biz_content' => '',
