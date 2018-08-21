@@ -10,8 +10,8 @@ namespace Payment;
 
 
 /**
- * @method static \Payment\Alipay\Application alipay(string $name , array $config) 支付宝
- * @method static \Payment\Wechat\Application wechat(string $name , array $config) 微信
+ * @method static \Payment\Alipay\Application alipay(string $name, array $config) 支付宝
+ * @method static \Payment\Wechat\Application wechat(string $name, array $config) 微信
  */
 class Payment
 {
