@@ -10,8 +10,8 @@ namespace Payment;
 
 
 /**
- * @method static \Payment\Alipay\Application alipay(string $name, array $config) 支付宝
- * @method static \Payment\Wechat\Application wechat(string $name, array $config) 微信
+ * @method static \Payment\Alipay\Application alipay(array $config) 支付宝
+ * @method static \Payment\Wechat\Application wechat(array $config) 微信
  */
 class Payment
 {
@@ -23,6 +23,7 @@ class Payment
      */
     public static function make($name, array $config)
     {
+        $config = new Config($config);
         $value = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
         $application = __NAMESPACE__ . '\\' . $value . '\\Application';
         if (!class_exists($application)) {
@@ -32,14 +33,16 @@ class Payment
     }
 
     /**
+     * Dynamically pass methods to the application.
      * @param $name
-     * @param $config
+     * @param $arguments
      * @return mixed
      * @throws \Exception
      */
-    public static function __callStatic($name, $config)
+    public static function __callStatic($name, $arguments)
     {
-        return self::make($name, ...$config);
+        // TODO: Implement __callStatic() method.
+        return self::make($name, ...$arguments);
     }
 }
 

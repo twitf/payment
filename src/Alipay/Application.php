@@ -31,4 +31,11 @@ class Application
             'biz_content' => '',
         ];
     }
+
+    public function __call($name, $arguments)
+    {
+        // TODO: Implement __call() method.
+
+
+    }
 }
