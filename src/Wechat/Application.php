@@ -26,7 +26,7 @@ class Application
      * @var array
      */
     const required = [
-        'apiSecret',
+        'key',
         'appid',
         'mch_id',
         'body',
@@ -74,6 +74,6 @@ class Application
         if (!class_exists($application)) {
             throw new \Exception(sprintf("Class '%s' does not exist.", $application));
         }
-        return new $application($this->config);
+        return call_user_func_array([$application, $name], $this->config);
     }
 }
