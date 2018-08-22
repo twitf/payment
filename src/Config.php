@@ -32,6 +32,11 @@ class Config implements \ArrayAccess
         ArrayHelp::remove($this->config, $key);
     }
 
+    public function exists($key)
+    {
+        return !is_null(ArrayHelp::exists($this->config, $key));
+    }
+
     public function offsetSet($offset, $value)
     {
         $this->set($offset, $value);
@@ -39,7 +44,7 @@ class Config implements \ArrayAccess
 
     public function offsetExists($offset)
     {
-        return !is_null(ArrayHelp::exists($this->config, $offset));
+        return $this->exists($offset);
     }
 
     public function offsetUnset($offset)

@@ -10,8 +10,8 @@ namespace twitf\Payment;
 
 
 /**
- * @method static \Payment\Alipay\Application alipay(array $config) 支付宝
- * @method static \Payment\Wechat\Application wechat(array $config) 微信
+ * @method static \twitf\Payment\Alipay\Application alipay(array $config) 支付宝
+ * @method static \twitf\Payment\Wechat\Application wechat(array $config) 微信
  */
 class Payment
 {
@@ -21,7 +21,7 @@ class Payment
      * @return mixed
      * @throws \Exception
      */
-    public static function make($name, array $config)
+    public static function make($name, $config = [])
     {
         $config = new Config($config);
         $value = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));

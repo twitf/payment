@@ -14,4 +14,4 @@ $config=[
     ]
 ];
 
-$a=\Payment\Payment::wechat($config)->mp();
+$a=twitf\Payment\Payment::wechat($config)->mp();

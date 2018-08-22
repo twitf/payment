@@ -11,22 +11,39 @@ namespace twitf\Payment\Wechat;
 use twitf\Payment\Config;
 
 /**
- * 刷卡支付 目前没有接触过 待续
  * @method \twitf\Payment\Wechat\AppPay app() App支付
  * @method \twitf\Payment\Wechat\MiniPay mini() 小程序支付
  * @method \twitf\Payment\Wechat\MpPay mp() 公众号支付
  * @method \twitf\Payment\Wechat\ScanPay scan() 扫码支付
  * @method \twitf\Payment\Wechat\H5Pay wap() h5支付
- * @method \twitf\Payment\Wechat\MicroPay micro() h5支付
+ * @method \twitf\Payment\Wechat\MicroPay micro() 刷卡支付 _______目前没有接触过 待续
  */
 class Application
 {
-    public $config;
+    public $config = [];
+    /**
+     * 必传参数
+     * @var array
+     */
+    const required = [
+        'apiSecret',
+        'appid',
+        'mch_id',
+        'body',
+        'out_trade_no',
+        'total_fee',
+        'spbill_create_ip',
+        'notify_url',
+    ];
 
+    /**
+     * Application constructor.
+     * @param Config $config
+     * @throws \Exception
+     */
     public function __construct(Config $config)
     {
         $this->config = $config;
-        var_dump($this->config);
     }
 
     /**
@@ -47,10 +64,15 @@ class Application
      */
     public function make($name)
     {
+        foreach (self::required as $value) {
+            if ($this->config->exists($value)) {
+                throw new \Exception(sprintf("Config attribute '%s' does not exist.", $value));
+            }
+        }
         $value = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
         $application = __NAMESPACE__ . '\\' . $value . 'Pay';
         if (!class_exists($application)) {
-            throw new \Exception("Class {$application} does not exist");
+            throw new \Exception(sprintf("Class '%s' does not exist.", $application));
         }
         return new $application($this->config);
     }
