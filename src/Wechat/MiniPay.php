@@ -5,7 +5,7 @@
  * Date: 2018/8/22
  * Time: 13:17
  */
-namespace Payment\Wechat;
+namespace twitf\Payment\Wechat;
 class MiniPay{
 
 }

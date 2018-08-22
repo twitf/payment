@@ -6,7 +6,7 @@
  * Time: 14:01
  */
 
-namespace Payment;
+namespace twitf\Payment;
 
 
 /**

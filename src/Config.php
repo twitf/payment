@@ -6,7 +6,7 @@
  * Time: 22:29
  */
 
-namespace Payment;
+namespace twitf\Payment;
 
 class Config implements \ArrayAccess
 {

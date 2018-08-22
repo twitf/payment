@@ -7,7 +7,7 @@
  */
 
 
-namespace Payment;
+namespace twitf\Payment;
 
 class ArrayHelp
 {

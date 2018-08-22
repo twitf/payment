@@ -6,7 +6,7 @@
  * Date: 2018/8/22
  * Time: 13:06
  */
-namespace Payment\Wechat;
+namespace twitf\Payment\Wechat;
 class H5Pay
 {
 

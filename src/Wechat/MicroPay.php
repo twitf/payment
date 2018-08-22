@@ -6,7 +6,7 @@
  * Time: 13:36
  */
 
-namespace Payment\Wechat;
+namespace twitf\Payment\Wechat;
 class MicroPay
 {
 

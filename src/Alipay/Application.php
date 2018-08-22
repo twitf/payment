@@ -7,7 +7,7 @@
  * Time: 16:48
  */
 
-namespace Payment\Alipay;
+namespace twitf\Payment\Alipay;
 
 class Application
 {

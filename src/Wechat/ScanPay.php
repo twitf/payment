@@ -5,7 +5,9 @@
  * Date: 2018/8/22
  * Time: 13:15
  */
-namespace Payment\Wechat;
-class ScanPay{
+
+namespace twitf\Payment\Wechat;
+class ScanPay
+{
 
 }
