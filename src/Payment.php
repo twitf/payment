@@ -23,13 +23,12 @@ class Payment
      */
     public static function make($name, $config = [])
     {
-        $config = new Config($config);
         $value = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
         $application = __NAMESPACE__ . '\\' . $value . '\\Application';
         if (!class_exists($application)) {
-            throw new \Exception("Class {$application} does not exist");
+            throw new \Exception(sprintf("Class '%s' does not exist.", $application));
         }
-        return new $application($config);
+        return new $application(new Config($config));
     }
 
     /**

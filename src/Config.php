@@ -19,7 +19,7 @@ class Config implements \ArrayAccess
 
     public function get($key = null, $default = null)
     {
-        return ArrayHelp::get($key, $default);
+        return ArrayHelp::get($this->config, $key, $default);
     }
 
     public function set($key, $value)
@@ -34,7 +34,7 @@ class Config implements \ArrayAccess
 
     public function exists($key)
     {
-        return !is_null(ArrayHelp::exists($this->config, $key));
+        return ArrayHelp::exists($this->config, $key);
     }
 
     public function offsetSet($offset, $value)

@@ -9,5 +9,5 @@
 namespace twitf\Payment\Wechat;
 class AppPay
 {
-
+    const TRADE_TYPE='APP';
 }

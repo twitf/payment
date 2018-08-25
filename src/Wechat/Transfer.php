@@ -2,12 +2,12 @@
 /**
  * Created by PhpStorm.
  * User: twitf
- * Date: 2018/8/22
- * Time: 13:17
+ * Date: 2018/8/25
+ * Time: 17:39
  */
 
 namespace twitf\Payment\Wechat;
-class MiniPay
+class Transfer
 {
-    const TRADE_TYPE = 'JSAPI';
+
 }

@@ -8,6 +8,7 @@
 
 namespace twitf\Payment\Wechat;
 
+use twitf\Payment\ArrayHelp;
 use twitf\Payment\Config;
 
 /**
@@ -21,20 +22,15 @@ use twitf\Payment\Config;
 class Application
 {
     public $config = [];
-    /**
-     * 必传参数
-     * @var array
-     */
-    const required = [
-        'key',
-        'appid',
-        'mch_id',
-        'body',
-        'out_trade_no',
-        'total_fee',
-        'spbill_create_ip',
-        'notify_url',
-    ];
+
+    public $params = [];
+    const COMMON_REQUIRED = ['appid', 'mch_id', 'key'];
+    const APP_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
+    const MINI_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
+    const MP_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
+    const H5_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
+    const SCAN_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
+    const MICRO_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
 
     /**
      * Application constructor.
@@ -64,16 +60,30 @@ class Application
      */
     public function make($name)
     {
-        foreach (self::required as $value) {
-            if ($this->config->exists($value)) {
-                throw new \Exception(sprintf("Config attribute '%s' does not exist.", $value));
-            }
-        }
-        $value = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
-        $application = __NAMESPACE__ . '\\' . $value . 'Pay';
+        $this->validateParams($name,$this->config);
+        $name = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
+        $application = __NAMESPACE__ . '\\' . $name . 'Pay';
         if (!class_exists($application)) {
             throw new \Exception(sprintf("Class '%s' does not exist.", $application));
         }
-        return call_user_func_array([$application, $name], $this->config);
+        return call_user_func_array([new $application($this->config), 'pay'], []);
+    }
+
+    /**
+     * @param $required
+     * @param Config $config
+     * @throws \Exception
+     */
+    public function validateParams($name, Config $config)
+    {
+        $required=str_replace(' ', '', strtoupper(str_replace(['-', '_'], ' ', $name))) . '_REQUIRED';
+        var_dump(self::$required);die;
+        $required = self::$required;
+        var_dump($required);die;
+        foreach ($required as $value) {
+            if (!$config->exists($value)) {
+                throw new \Exception(sprintf("Config attribute '%s' does not exist.", $value));
+            }
+        }
     }
 }
