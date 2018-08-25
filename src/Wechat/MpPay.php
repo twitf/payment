@@ -9,26 +9,37 @@
 namespace twitf\Payment\Wechat;
 
 use twitf\Payment\Config;
-use GuzzleHttp\Client;
 
+
+/**
+ * 公众号支付
+ * Class MpPay
+ * @package twitf\Payment\Wechat
+ */
 class MpPay
 {
-    /**
-     * 必传参数
-     * @var array
-     */
-    const required = ['key', 'appid', 'mch_id', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    const REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
 
     const TRADE_TYPE = 'JSAPI';
 
     public $config = [];
 
+    /**
+     * MpPay constructor.
+     * @param Config $config
+     * @throws \Exception
+     */
     public function __construct(Config $config)
     {
         $this->config = $config;
-        Application::validateParams(self::required, $this->config);
+        Application::validateConfig(self::REQUIRED, $this->config);
     }
 
+    /**
+     * 统一下单
+     * @return mixed
+     * @throws \Exception
+     */
     public function pay()
     {
         $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";

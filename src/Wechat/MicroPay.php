@@ -7,7 +7,31 @@
  */
 
 namespace twitf\Payment\Wechat;
+
+use twitf\Payment\Config;
+
+/**
+ * 刷卡支付
+ * Class MicroPay
+ * @package twitf\Payment\Wechat
+ */
 class MicroPay
 {
+    const REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
 
+    const TRADE_TYPE = 'MICROPAY';
+
+    public $config = [];
+
+
+    /**
+     * MpPay constructor.
+     * @param Config $config
+     * @throws \Exception
+     */
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+        Application::validateConfig(self::REQUIRED, $this->config);
+    }
 }

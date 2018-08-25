@@ -8,7 +8,6 @@
 
 namespace twitf\Payment\Wechat;
 
-use twitf\Payment\ArrayHelp;
 use twitf\Payment\Config;
 
 /**
@@ -23,14 +22,7 @@ class Application
 {
     public $config = [];
 
-    public $params = [];
     const COMMON_REQUIRED = ['appid', 'mch_id', 'key'];
-    const APP_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
-    const MINI_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
-    const MP_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
-    const H5_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
-    const SCAN_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
-    const MICRO_REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
 
     /**
      * Application constructor.
@@ -60,7 +52,7 @@ class Application
      */
     public function make($name)
     {
-        $this->validateParams($name,$this->config);
+        self::validateConfig(self::COMMON_REQUIRED, $this->config);
         $name = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
         $application = __NAMESPACE__ . '\\' . $name . 'Pay';
         if (!class_exists($application)) {
@@ -74,12 +66,8 @@ class Application
      * @param Config $config
      * @throws \Exception
      */
-    public function validateParams($name, Config $config)
+    public static function validateConfig($required, Config $config)
     {
-        $required=str_replace(' ', '', strtoupper(str_replace(['-', '_'], ' ', $name))) . '_REQUIRED';
-        var_dump(self::$required);die;
-        $required = self::$required;
-        var_dump($required);die;
         foreach ($required as $value) {
             if (!$config->exists($value)) {
                 throw new \Exception(sprintf("Config attribute '%s' does not exist.", $value));
