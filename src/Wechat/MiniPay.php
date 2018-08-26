@@ -18,7 +18,7 @@ use twitf\Payment\Config;
 class MiniPay
 {
 
-    const REQUIRED = ['body', 'out_trade_no', 'total_fee', 'notify_url'];
+
 
     const TRADE_TYPE = 'JSAPI';
 
@@ -32,6 +32,5 @@ class MiniPay
     public function __construct(Config $config)
     {
         $this->config = $config;
-        Application::validateConfig(self::REQUIRED, $this->config);
     }
 }

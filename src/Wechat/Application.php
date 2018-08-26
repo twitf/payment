@@ -22,7 +22,14 @@ class Application
 {
     public $config = [];
 
-    const COMMON_REQUIRED = ['appid', 'mch_id', 'key'];
+    public $params = [];
+
+    public $appRequired     = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $h5Required      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'scene_info','redirect_url'];
+    public $microRequired   = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
+    public $miniRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $mpRequired      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $scanRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
 
     /**
      * Application constructor.
@@ -37,6 +44,7 @@ class Application
     /**
      * @param $name
      * @param $arguments
+     * @return mixed
      * @throws \Exception
      */
     public function __call($name, $arguments)
@@ -52,13 +60,18 @@ class Application
      */
     public function make($name)
     {
-        self::validateConfig(self::COMMON_REQUIRED, $this->config);
-        $name = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
-        $application = __NAMESPACE__ . '\\' . $name . 'Pay';
+        $_application = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
+        $application = __NAMESPACE__ . '\\' . $_application . 'Pay';
         if (!class_exists($application)) {
             throw new \Exception(sprintf("Class '%s' does not exist.", $application));
         }
-        return call_user_func_array([new $application($this->config), 'pay'], []);
+        $validateName = $name . 'Required';
+        self::validateConfig($this->$validateName, $this->config);
+        $this->params = $this->config->get();
+        $this->params['nonce_str'] = Help::getNonceStr();
+        $this->params['spbill_create_ip'] = Help::getClientIp();
+        unset($this->params['key']);
+        return call_user_func_array([new $application($this->config), 'pay'], [$this->params]);
     }
 
     /**

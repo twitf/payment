@@ -56,7 +56,7 @@ trait Help
      * @param string $key api密钥
      * @return string
      */
-    public static function MakeSign($data, $key)
+    public static function makeSign($data, $key)
     {
         //签名步骤一：按字典序排序参数
         ksort($data);
@@ -180,9 +180,10 @@ trait Help
 
     /**
      * 获取jsapi支付的参数
-     * @param array $UnifiedOrderResult 统一下单后返回的数据
-     * @return string               jsapi参数
-     * @throws ErrorException
+     * @param $UnifiedOrderResult
+     * @param $key
+     * @return false|string
+     * @throws \Exception
      */
     public static function getJsApiParameters($UnifiedOrderResult, $key)
     {
