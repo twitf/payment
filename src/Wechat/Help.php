@@ -176,4 +176,33 @@ trait Help
         }
         return filter_var($ip, FILTER_VALIDATE_IP) ?: '127.0.0.1';
     }
+
+
+    /**
+     * 获取jsapi支付的参数
+     * @param array $UnifiedOrderResult 统一下单后返回的数据
+     * @return string               jsapi参数
+     * @throws ErrorException
+     */
+    public static function getJsApiParameters($UnifiedOrderResult, $key)
+    {
+        $data = [];
+        $timeStamp = time();
+        $data['appId'] = $UnifiedOrderResult['appid'];
+        $data['timeStamp'] = "$timeStamp";
+        $data['nonceStr'] = Help::getNonceStr();
+        $data['package'] = "prepay_id=" . $UnifiedOrderResult['prepay_id'];
+        $data['signType'] = 'MD5';
+        $data['paySign'] = self::MakeSign($data, $key);
+        return json_encode($data);
+    }
+
+    public static function getCurrentUrl()
+    {
+        $protocol = 'http://';
+        if ((!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'http') === 'https') {
+            $protocol = 'https://';
+        }
+        return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    }
 }

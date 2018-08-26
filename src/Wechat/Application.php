@@ -15,7 +15,7 @@ use twitf\Payment\Config;
  * @method \twitf\Payment\Wechat\MiniPay mini() 小程序支付
  * @method \twitf\Payment\Wechat\MpPay mp() 公众号支付
  * @method \twitf\Payment\Wechat\ScanPay scan() 扫码支付
- * @method \twitf\Payment\Wechat\H5Pay wap() h5支付
+ * @method \twitf\Payment\Wechat\H5Pay h5() h5支付
  * @method \twitf\Payment\Wechat\MicroPay micro() 刷卡支付 _______目前没有接触过 待续
  */
 class Application
@@ -42,7 +42,7 @@ class Application
     public function __call($name, $arguments)
     {
         // TODO: Implement __call() method.
-        $this->make($name);
+        return $this->make($name);
     }
 
     /**

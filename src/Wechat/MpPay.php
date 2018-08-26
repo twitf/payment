@@ -10,7 +10,6 @@ namespace twitf\Payment\Wechat;
 
 use twitf\Payment\Config;
 
-
 /**
  * 公众号支付
  * Class MpPay
@@ -42,7 +41,6 @@ class MpPay
      */
     public function pay()
     {
-        $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
         $params = [
             'appid' => $this->config->get('appid'),
             'mch_id' => $this->config->get('mch_id'),
@@ -57,29 +55,10 @@ class MpPay
         ];
         $params['sign'] = Help::MakeSign($params, $this->config->get('key'));
         $xml = Help::arrayToXml($params);
-        $ch = curl_init();
-        //设置超时
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        //设置header
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        //要求结果为字符串且输出到屏幕上
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        //post提交方式
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-        //运行curl
-        $data = curl_exec($ch);
-        curl_close($ch);
-        var_dump(Help::xmlToArray($data));
-        die;
-        if ($result['result_code'] === 'SUCCESS' && $result['return_code'] === 'SUCCESS') {
-            return $result;
-        } else {
-            //$result['err_msg'] = $this->error_code($result['err_code']);
-            throw new \Exception($result['err_code_des']);
+        $result = Help::xmlToArray(Request::requestApi('pay/unifiedorder', $xml));
+        if (!isset($result['return_code']) || $result['return_code'] != 'SUCCESS' || $result['result_code'] != 'SUCCESS') {
+            throw new \Exception(sprintf("Wechat API Error '%s'.", $result['return_msg'] . (isset($result['err_code_des']) ?: '')));
         }
+        return Help::getJsApiParameters($result, $this->config->get('key'));
     }
 }
