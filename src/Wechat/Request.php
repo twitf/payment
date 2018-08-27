@@ -22,9 +22,7 @@ class Request
     //请求超时的秒数。使用 0 无限期的等待(默认行为)。
     protected $timeout = 5;
 
-    private function __clone()
-    {
-    }
+    private function __clone(){}
 
     public static function getInstance()
     {
@@ -32,7 +30,6 @@ class Request
             self::$instance = new self();
         }
         return self::$instance;
-
     }
 
     /**

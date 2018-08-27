@@ -32,4 +32,17 @@ class ScanPay
     {
         $this->config = $config;
     }
+
+    /**
+     * 统一下单
+     * @param $params
+     * @return string
+     * @throws \Exception
+     */
+    public function pay($params)
+    {
+        $params['trade_type'] = self::TRADE_TYPE;
+        $result = Request::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
+        return $result;
+    }
 }

@@ -188,22 +188,53 @@ trait Help
     public static function getJsApiParameters($UnifiedOrderResult, $key)
     {
         $data = [];
-        $timeStamp = time();
         $data['appId'] = $UnifiedOrderResult['appid'];
-        $data['timeStamp'] = "$timeStamp";
+        $data['timeStamp'] = (string)time();
         $data['nonceStr'] = Help::getNonceStr();
         $data['package'] = "prepay_id=" . $UnifiedOrderResult['prepay_id'];
         $data['signType'] = 'MD5';
         $data['paySign'] = self::MakeSign($data, $key);
-        return json_encode($data);
+        return $data;
     }
 
+    /**
+     * 获取当前链接地址
+     * @return string
+     */
     public static function getCurrentUrl()
     {
         $protocol = 'http://';
-        if ((!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'http') === 'https') {
+        if ((!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS']) || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ?: 'http') === 'https') {
             $protocol = 'https://';
         }
         return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    }
+
+    /**
+     * 获取当前域名链接（不包含参数）
+     * @return string
+     */
+    public static function getHostInfo()
+    {
+        $http = 'http';
+        $secure = false;
+        if (isset($_SERVER['HTTPS']) && (strcasecmp($_SERVER['HTTPS'], 'on') === 0 || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strcasecmp($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') === 0) {
+            $http = 'https';
+            $secure = true;
+        }
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $hostInfo = $http . '://' . $_SERVER['HTTP_HOST'];
+        } elseif (isset($_SERVER['SERVER_NAME'])) {
+            if ($secure) {
+                $port = isset($_SERVER['SERVER_PORT']) ? (int)$_SERVER['SERVER_PORT'] : 443;
+            } else {
+                $port = isset($_SERVER['SERVER_PORT']) ? (int)$_SERVER['SERVER_PORT'] : 80;
+            }
+            $hostInfo = $http . '://' . $_SERVER['SERVER_NAME'];
+            if (($port !== 80 && !$secure) || ($port !== 443 && $secure)) {
+                $hostInfo .= ':' . $port;
+            }
+        }
+        return $hostInfo;
     }
 }

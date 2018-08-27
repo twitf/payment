@@ -33,4 +33,8 @@ class MicroPay
     {
         $this->config = $config;
     }
+
+    public function pay($params){
+        //待续
+    }
 }

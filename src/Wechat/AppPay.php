@@ -32,4 +32,18 @@ class AppPay
     {
         $this->config = $config;
     }
+
+    public function pay($params)
+    {
+        $params['trade_type'] = self::TRADE_TYPE;
+        $result = Request::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
+        $data['appid']      = $result['appid'];    //appid
+        $data['partnerid']  = $result['mch_id'];
+        $data['prepayid']   = $result['prepay_id'];
+        $data['package']    = 'Sign=WXPay';
+        $data['noncestr']   = Help::getNonceStr();
+        $data['timestamp']  = (string)time();
+        $data['sign']       = Help::MakeSign($data,$this->config->get('key'));
+        return $data;
+    }
 }
