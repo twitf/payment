@@ -44,7 +44,7 @@ class Request
     public static function requestApi($uri, $data, $key, $cert = [])
     {
         $data['sign'] = Help::makeSign($data, $key);
-        $result = Help::xmlToArray(self::getInstance()->post($uri, Help::arrayToXml($data)));
+        $result = Help::xmlToArray(self::getInstance()->post($uri, Help::arrayToXml($data),$cert));
         if (!isset($result['return_code']) || $result['return_code'] != 'SUCCESS' || $result['result_code'] != 'SUCCESS') {
             throw new \Exception(sprintf("Wechat API Error '%s'.", $result['return_msg'] . (isset($result['err_code_des']) ?: '')));
         }

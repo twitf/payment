@@ -36,7 +36,6 @@ trait HttpRequest
         } else {
             $options['form_params'] = $data;
         }
-
         return $this->request('post', $uri, $options);
     }
 
