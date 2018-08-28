@@ -22,7 +22,9 @@ class Request
     //请求超时的秒数。使用 0 无限期的等待(默认行为)。
     protected $timeout = 5;
 
-    private function __clone(){}
+    private function __clone()
+    {
+    }
 
     public static function getInstance()
     {
@@ -44,10 +46,15 @@ class Request
     public static function requestApi($uri, $data, $key, $cert = [])
     {
         $data['sign'] = Help::makeSign($data, $key);
-        $result = Help::xmlToArray(self::getInstance()->post($uri, Help::arrayToXml($data),$cert));
-        if (!isset($result['return_code']) || $result['return_code'] != 'SUCCESS' || $result['result_code'] != 'SUCCESS') {
-            throw new \Exception(sprintf("Wechat API Error '%s'.", $result['return_msg'] . (isset($result['err_code_des']) ?: '')));
+        $result = Help::xmlToArray(self::getInstance()->post($uri, Help::arrayToXml($data), $cert));
+        if ($result['return_code'] != 'SUCCESS' || $result['result_code'] != 'SUCCESS') {
+            throw new \Exception(sprintf("Wechat API Error '%s'.", $result['return_msg'] . (isset($result['err_code_des']) ? ':' . $result['err_code_des'] : '')));
         }
-        return $result;
+        //验证签名
+        if (Help::makeSign($result, $key) === $result['sign']) {
+            return $result;
+        }
     }
 }
+
+

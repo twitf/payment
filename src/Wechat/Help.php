@@ -93,26 +93,6 @@ trait Help
     }
 
     /**
-     * 获取支付结果通知数据
-     * @return array|bool
-     * @throws \Exception
-     */
-    public static function getNotifyData()
-    {
-        $xml = file_get_contents("php://input");
-        if (empty($xml)) {
-            return false;
-        }
-        $data = self::xmlToArray($xml);
-        if (!empty($data['return_code'])) {
-            if ($data['return_code'] == 'FAIL') {
-                return false;
-            }
-        }
-        return $data ?: [];
-    }
-
-    /**
      * 接收通知成功后应答输出XML数据
      * @throws \Exception
      */

@@ -30,7 +30,7 @@ class Application
     public $miniRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
     public $mpRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
     public $scanRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
-    public $refundRequired = ['appid', 'mch_id', 'key', 'out_trade_no', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
+    public $refundRequired = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
 
     /**
      * Application constructor.
@@ -83,8 +83,15 @@ class Application
         $validateName = $name . 'Required';
         $arguments = ArrayHelp::merge($this->config->get(), $arguments);
         foreach ($this->$validateName as $value) {
-            if (!ArrayHelp::exists($arguments, $value)) {
-                throw new \Exception(sprintf("Config attribute '%s' does not exist.", $value));
+            if (strpos($value, '|')) {
+                $value = explode('|', $value);
+                if (!ArrayHelp::exists($arguments, $value[0]) && !ArrayHelp::exists($arguments, $value[1])) {
+                    throw new \Exception(sprintf("Config attribute '%s' and '%s'  has at least one bottleneck.", $value[0], $value[1]));
+                }
+            } else {
+                if (!ArrayHelp::exists($arguments, $value)) {
+                    throw new \Exception(sprintf("Config attribute '%s' does not exist.", $value));
+                }
             }
         }
         unset($arguments['key']);
@@ -97,9 +104,30 @@ class Application
         $params['nonce_str'] = Help::getNonceStr();
         unset($params['cert']);
         unset($params['ssl_key']);
-        $result = Request::requestApi('secapi/pay/refund', $params, $this->config->get('key'), ['cert' => $arguments['cert'], 'ssl_key' => $arguments['ssl_key']]);
-        var_dump($result);
-        die;
+        $result = Request::requestApi('secapi/pay/refund', $params, $this->config->get('key'), [
+            'cert' => $arguments['cert'],
+            'ssl_key' => $arguments['ssl_key']
+        ]);
         return $result;
+    }
+    
+    /**
+     * 验证签名
+     * @param $key
+     * @return bool|mixed
+     * @throws \Exception
+     */
+    public function verify($key)
+    {
+        $xml = file_get_contents("php://input");
+        $notify = Help::xmlToArray($xml);
+        if (Help::makeSign($notify, $key) === $notify['sign']) {
+            $data = self::xmlToArray();
+            if ($notify['return_code'] != 'SUCCESS' || $notify['result_code'] != 'SUCCESS') {
+                throw new \Exception(sprintf("Wechat API Error '%s'.", $notify['return_msg'] . (isset($notify['err_code_des']) ? ':' . $notify['err_code_des'] : '')));
+            }
+            return $notify;
+        }
+        return false;
     }
 }
