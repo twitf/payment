@@ -189,46 +189,4 @@ trait ArrayHelp
             unset($array[array_shift($parts)]);
         }
     }
-
-    /**
-     *递归地将两个或多个数组合并为一个数组。
-     *如果每个数组都有一个具有相同字符串键值的元素，则使用后者
-     *将覆盖前者(与array_merge_recursive不同)。
-     *如果两个数组都有一个数组元素，就会进行递归合并
-     *类型和都有相同的键。
-     *对于整数键元素，后一个数组中的元素将
-     *被附加到前一个数组中。
-     *你可以使用[[UnsetArrayValue]]对象来取消前一个数组的值
-     * [[ReplaceArrayValue]]]强制替换前一个值，而不是递归合并。
-     * 要合并到的数组
-     * @param数组 $b数组合并。您可以指定额外的
-     *数组通过第三参数，第四参数等。
-     * @return数组合并的数组(原始数组没有改变)
-     */
-    public static function merge($a, $b)
-    {
-        $args = func_get_args();
-        $res = array_shift($args);
-        while (!empty($args)) {
-            $next = array_shift($args);
-            foreach ($next as $k => $v) {
-                if ($v instanceof UnsetArrayValue) {
-                    unset($res[$k]);
-                } elseif ($v instanceof ReplaceArrayValue) {
-                    $res[$k] = $v->value;
-                } elseif (is_int($k)) {
-                    if (isset($res[$k])) {
-                        $res[] = $v;
-                    } else {
-                        $res[$k] = $v;
-                    }
-                } elseif (is_array($v) && isset($res[$k]) && is_array($res[$k])) {
-                    $res[$k] = self::merge($res[$k], $v);
-                } else {
-                    $res[$k] = $v;
-                }
-            }
-        }
-        return $res;
-    }
 }

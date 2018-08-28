@@ -50,10 +50,10 @@ class Request
         if ($result['return_code'] != 'SUCCESS' || $result['result_code'] != 'SUCCESS') {
             throw new \Exception(sprintf("Wechat API Error '%s'.", $result['return_msg'] . (isset($result['err_code_des']) ? ':' . $result['err_code_des'] : '')));
         }
-        //验证签名
         if (Help::makeSign($result, $key) === $result['sign']) {
             return $result;
         }
+        throw new \Exception("Sign error");
     }
 }
 

@@ -33,6 +33,12 @@ class AppPay
         $this->config = $config;
     }
 
+    /**
+     * 统一下单
+     * @param $params
+     * @return mixed
+     * @throws \Exception
+     */
     public function pay($params)
     {
         $params['trade_type'] = self::TRADE_TYPE;

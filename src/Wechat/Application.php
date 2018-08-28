@@ -8,7 +8,6 @@
 
 namespace twitf\Payment\Wechat;
 
-use think\validate\ValidateRule;
 use twitf\Payment\ArrayHelp;
 use twitf\Payment\Config;
 
@@ -24,13 +23,13 @@ class Application
 {
     public $config = [];
 
-    public $appRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $h5Required = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'scene_info', 'redirect_url'];
-    public $microRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
-    public $miniRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $mpRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $scanRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
-    public $refundRequired = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
+    public $appRequired     = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $h5Required      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'scene_info', 'redirect_url'];
+    public $microRequired   = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
+    public $miniRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $mpRequired      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $scanRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
+    public $refundRequired  = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
 
     /**
      * Application constructor.
@@ -54,8 +53,10 @@ class Application
         return $this->make($name, $arguments[0]);
     }
 
+
     /**
      * @param $name
+     * @param $arguments
      * @return mixed
      * @throws \Exception
      */
@@ -72,16 +73,18 @@ class Application
         return call_user_func_array([new $application($this->config), 'pay'], [$params]);
     }
 
+
     /**
      * 初始化配置 返回请求参数
-     * @param $required
-     * @param Config $config
+     * @param $name
+     * @param $arguments
+     * @return mixed
      * @throws \Exception
      */
     public function initConfig($name, $arguments)
     {
         $validateName = $name . 'Required';
-        $arguments = ArrayHelp::merge($this->config->get(), $arguments);
+        $arguments = array_merge($this->config->get(), $arguments);
         foreach ($this->$validateName as $value) {
             if (strpos($value, '|')) {
                 $value = explode('|', $value);
@@ -98,6 +101,12 @@ class Application
         return $arguments;
     }
 
+    /**
+     * 退款
+     * @param $arguments
+     * @return mixed
+     * @throws \Exception
+     */
     public function refund($arguments)
     {
         $params = $this->initConfig('refund', $arguments);
@@ -122,9 +131,8 @@ class Application
         $xml = file_get_contents("php://input");
         $notify = Help::xmlToArray($xml);
         if (Help::makeSign($notify, $key) === $notify['sign']) {
-            $data = self::xmlToArray();
             if ($notify['return_code'] != 'SUCCESS' || $notify['result_code'] != 'SUCCESS') {
-                throw new \Exception(sprintf("Wechat API Error '%s'.", $notify['return_msg'] . (isset($notify['err_code_des']) ? ':' . $notify['err_code_des'] : '')));
+                throw new \Exception(sprintf("Wechat Notify Error '%s'.", $notify['return_msg'] . (isset($notify['err_code_des']) ? ':' . $notify['err_code_des'] : '')));
             }
             return $notify;
         }
