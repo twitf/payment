@@ -6,7 +6,7 @@
  * Time: 11:30
  */
 
-namespace twitf\Payment\Wechat;
+namespace twitf\Payment\Alipay;
 
 class Request
 {

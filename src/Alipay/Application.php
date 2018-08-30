@@ -23,7 +23,7 @@ class Application
     const  BASE_URL='https://openapi.alipay.com/gateway.do';
     public $appRequired = ['app_id', 'merchant_private_key', 'alipay_public_key', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
     public $wapRequired = ['app_id', 'merchant_private_key', 'alipay_public_key','return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
-    public $pcRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
+    public $pcRequired = ['app_id', 'merchant_private_key', 'alipay_public_key','return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
     public $refundRequired = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
     public $transferRequired = [];
 

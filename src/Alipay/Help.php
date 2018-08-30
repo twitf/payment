@@ -11,9 +11,9 @@ namespace twitf\Payment\Alipay;
 trait Help
 {
     /**
-     * @param $data 待签名字符串
-     * @param $privateKey 商户私钥
-     * @param $signType 签名方式
+     * @param array $data 待签名字符串
+     * @param string $privateKey 商户私钥
+     * @param string $signType 签名方式
      * @return string
      */
     public static function makeSign($data, $privateKey, $signType)
@@ -40,8 +40,8 @@ trait Help
     }
 
     /**
-     * @param $params
-     * @param $charset
+     * @param array $params
+     * @param string $charset
      * @return string
      */
     public static function getSignContent($params,$charset)
