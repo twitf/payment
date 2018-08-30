@@ -86,7 +86,7 @@ class Application
         $validateName = $name . 'Required';
         $arguments = array_merge($this->config->get(), $arguments);
         foreach ($this->$validateName as $value) {
-            if (strpos($value, '|')) {
+            if (strpos($value, '|')!==false) {
                 $value = explode('|', $value);
                 if (!ArrayHelp::exists($arguments, $value[0]) && !ArrayHelp::exists($arguments, $value[1])) {
                     throw new \Exception(sprintf("Config attribute '%s' and '%s'  has at least one bottleneck.", $value[0], $value[1]));
