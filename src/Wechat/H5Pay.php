@@ -16,7 +16,9 @@ class H5Pay
     const TRADE_TYPE = 'MWEB';
 
     public $config = [];
-
+    
+    public $redirect_url = '';
+    
     /**
      * MpPay constructor.
      * @param Config $config
@@ -36,12 +38,13 @@ class H5Pay
     public function pay($params)
     {
         $params['trade_type'] = self::TRADE_TYPE;
-        if ($this->config->exists('redirect_url')) {
+        if (isset($params['redirect_url'])) {
+            $this->redirect_url = $params['redirect_url'];
             unset($params['redirect_url']);
         }
         $result = Request::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
-        if ($this->config->exists('redirect_url')) {
-            $result['mweb_url'] = $result['mweb_url'] . '&redirect_url=' . urlencode($this->config->get('redirect_url'));
+        if (!empty($this->redirect_url)) {
+            $result['mweb_url'] .= '&redirect_url=' . urlencode($this->redirect_url);
         }
         return $result;
     }
