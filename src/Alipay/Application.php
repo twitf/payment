@@ -20,11 +20,14 @@ use twitf\Payment\ArrayHelp;
 class Application
 {
     public $config = [];
-    const  BASE_URL='https://openapi.alipay.com/gateway.do';
+
+    //请求地址
+    public $requestUrl = '';
+
     public $appRequired = ['app_id', 'merchant_private_key', 'alipay_public_key', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
-    public $wapRequired = ['app_id', 'merchant_private_key', 'alipay_public_key','return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
-    public $pcRequired = ['app_id', 'merchant_private_key', 'alipay_public_key','return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
-    public $refundRequired = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
+    public $wapRequired = ['app_id', 'merchant_private_key', 'alipay_public_key', 'return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
+    public $pcRequired = ['app_id', 'merchant_private_key', 'alipay_public_key', 'return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
+    public $refundRequired = ['app_id', 'merchant_private_key', 'alipay_public_key', 'out_trade_no|trade_no', 'charset', 'sign_type', 'refund_amount'];
     public $transferRequired = [];
 
     /**
@@ -35,6 +38,7 @@ class Application
     public function __construct(Config $config)
     {
         $this->config = $config;
+        $this->requestUrl = Help::setBaseUrl($this->config->exists('mod') && $this->config->get('mod') == 'sandbox');
     }
 
     /**
@@ -61,12 +65,15 @@ class Application
         if (!class_exists($application)) {
             throw new \Exception(sprintf("Class '%s' does not exist.", $application));
         }
+        //业务参数
         $params = $this->initConfig($name, $arguments);
-        return call_user_func_array([new $application($this->config), 'pay'], [$params]);
+        //公共参数
+        $commonParams = $this->generateCommonParams($this->config->get());
+        return call_user_func_array([new $application($this->config), 'pay'], [$this->requestUrl, $commonParams, $params]);
     }
 
     /**
-     * 初始化配置 返回业务参数
+     * 验证必传参数 返回业务参数
      * @param $required
      * @param Config $config
      * @throws \Exception
@@ -89,5 +96,40 @@ class Application
             }
         }
         return $arguments;
+    }
+
+    /**
+     * 生成公共参数
+     * @param $config
+     * @return mixed
+     */
+    public function generateCommonParams($config)
+    {
+        $config['format'] = 'JSON';
+        $config['charset'] = $this->config->get('charset');//'UTF-8';
+        $config['sign_type'] = $this->config->get('sign_type');//'RSA2'
+        $config['version'] = '1.0';
+        $config['timestamp'] = date('Y-m-d H:i:s', time());
+        //清理请求无用的参数
+        unset($config['merchant_private_key']);
+        unset($config['alipay_public_key']);
+        unset($config['mod']);
+        return $config;
+    }
+
+    /**
+     * @param array $arguments
+     * @throws \Exception
+     */
+    public function refund($arguments)
+    {
+        //业务参数
+        $params = $this->initConfig('refund', $arguments);
+        //公共参数
+        $commonParams = $this->generateCommonParams($this->config->get());
+        $commonParams['method'] = 'alipay.trade.refund';
+        $commonParams['biz_content'] = json_encode($params);
+        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('merchant_private_key'), $this->config->get('sign_type'));
+        Help::requestApi($this->requestUrl, $commonParams,$this->config->get('alipay_public_key'));
     }
 }
