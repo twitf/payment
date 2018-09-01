@@ -87,10 +87,16 @@ class Application
         //组合必传参数数组
         $validateArray = array_merge($this->config->get(), $arguments);
         foreach ($this->$validateName as $value) {
-            if (strpos($value, '|') !== false) {//二选一 参数
+            if (strpos($value, '|') !== false) {//多选一 参数
                 $value = explode('|', $value);
-                if (!ArrayHelp::exists($validateArray, $value[0]) && !ArrayHelp::exists($validateArray, $value[1])) {
-                    throw new \Exception(sprintf("Config attribute '%s' and '%s'  has at least one bottleneck.", $value[0], $value[1]));
+                $errorLen=0;
+                foreach ($value as $_value){
+                    if (!ArrayHelp::exists($arguments, $_value)){
+                        $errorLen++;
+                    }
+                }
+                if ($errorLen==count($value)) {
+                    throw new \Exception(sprintf("Config attribute '%s'  has at least one bottleneck.", implode(' and',$value)));
                 }
             } else {
                 if (!ArrayHelp::exists($validateArray, $value)) {
@@ -213,16 +219,14 @@ class Application
 
     /**
      * 回调验证签名
-     * @param $params
+     * @param $params 回调参数数组
+     * @param $alipayPublicKey 支付宝公钥
      * @return bool
      * @throws \Exception
      */
-    public function verify($params)
+    public function verify($params,$alipayPublicKey)
     {
-        if ($this->config->exists('alipay_public_key')) {
-            throw new \Exception("Config attribute 'alipay_public_key' does not exist.");
-        }
         $signContent = Help::getSignContent($params, $params['charset'], true);
-        return Help::verifySign($signContent, $params['sign'], $this->config->get('alipay_public_key'), $params['sign_type']);
+        return Help::verifySign($signContent, $params['sign'], $alipayPublicKey, $params['sign_type']);
     }
 }

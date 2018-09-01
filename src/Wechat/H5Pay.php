@@ -42,7 +42,7 @@ class H5Pay
             $this->redirect_url = $params['redirect_url'];
             unset($params['redirect_url']);
         }
-        $result = Request::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
+        $result = Help::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
         if (!empty($this->redirect_url)) {
             $result['mweb_url'] .= '&redirect_url=' . urlencode($this->redirect_url);
         }

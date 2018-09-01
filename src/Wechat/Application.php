@@ -30,7 +30,8 @@ class Application
     public $mpRequired      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
     public $scanRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
     public $refundRequired  = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
-
+    public $queryRequired   = ['appid', 'mch_id', 'key','out_trade_no|transaction_id'];
+    public $closeRequired   = ['appid', 'mch_id', 'key','out_trade_no'];
     /**
      * Application constructor.
      * @param Config $config
@@ -86,10 +87,16 @@ class Application
         $validateName = $name . 'Required';
         $arguments = array_merge($this->config->get(), $arguments);
         foreach ($this->$validateName as $value) {
-            if (strpos($value, '|')!==false) {
+            if (strpos($value, '|') !== false) {//多选一 参数
                 $value = explode('|', $value);
-                if (!ArrayHelp::exists($arguments, $value[0]) && !ArrayHelp::exists($arguments, $value[1])) {
-                    throw new \Exception(sprintf("Config attribute '%s' and '%s'  has at least one bottleneck.", $value[0], $value[1]));
+                $errorLen=0;
+                foreach ($value as $_value){
+                    if (!ArrayHelp::exists($arguments, $_value)){
+                        $errorLen++;
+                    }
+                }
+                if ($errorLen==count($value)) {
+                    throw new \Exception(sprintf("Config attribute '%s'  has at least one bottleneck.", implode(' and',$value)));
                 }
             } else {
                 if (!ArrayHelp::exists($arguments, $value)) {
@@ -113,10 +120,32 @@ class Application
         $params['nonce_str'] = Help::getNonceStr();
         unset($params['cert']);
         unset($params['ssl_key']);
-        $result = Request::requestApi('secapi/pay/refund', $params, $this->config->get('key'), [
+        $result = Help::requestApi('secapi/pay/refund', $params, $this->config->get('key'), [
             'cert' => $arguments['cert'],
             'ssl_key' => $arguments['ssl_key']
         ]);
+        return $result;
+    }
+
+    public function query($arguments, $isReturn = false)
+    {
+        $params = $this->initConfig('query', $arguments);
+        $params['nonce_str'] = Help::getNonceStr();
+        $uri = $isReturn ? 'pay/refundquery' : 'pay/orderquery';
+        $result = Help::requestApi($uri, $params, $this->config->get('key'));
+        return $result;
+    }
+
+    /**
+     *
+     * @param $arguments
+     * @return mixed
+     * @throws \Exception
+     */
+    public function close($arguments){
+        $params = $this->initConfig('close', $arguments);
+        $params['nonce_str'] = Help::getNonceStr();
+        $result = Help::requestApi('pay/closeorder', $params, $this->config->get('key'));
         return $result;
     }
 
@@ -136,6 +165,6 @@ class Application
             }
             return $notify;
         }
-        return false;
+        throw new \Exception("Sign error");
     }
 }

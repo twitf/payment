@@ -42,7 +42,7 @@ class AppPay
     public function pay($params)
     {
         $params['trade_type'] = self::TRADE_TYPE;
-        $result = Request::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
+        $result = Help::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
         $data['appid']      = $result['appid'];    //appid
         $data['partnerid']  = $result['mch_id'];
         $data['prepayid']   = $result['prepay_id'];

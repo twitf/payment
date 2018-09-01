@@ -42,7 +42,7 @@ class MpPay
     public function pay($params)
     {
         $params['trade_type'] = self::TRADE_TYPE;
-        $result = Request::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
+        $result = Help::requestApi('pay/unifiedorder', $params, $this->config->get('key'));
         return Help::getJsApiParameters($result, $this->config->get('key'));
     }
 }
