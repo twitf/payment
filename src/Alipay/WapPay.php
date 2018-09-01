@@ -10,7 +10,7 @@ namespace twitf\Payment\Alipay;
 
 use twitf\Payment\Config;
 
-class WapPay extends PcPay
+class WapPay
 {
     const PRODUCT_CODE = 'QUICK_WAP_WAY';
 

@@ -38,18 +38,20 @@ class Help
         return self::$instance;
     }
 
+
     /**
      * 请求接口
      * @param $uri
      * @param $data
-     * @param $key
-     * @param array $cert
+     * @param $publicKey
      * @return mixed
      * @throws \Exception
      */
     public static function requestApi($uri, $data, $publicKey)
     {
-        $result = json_decode(mb_convert_encoding(self::getInstance()->post('', $data), 'utf-8', 'gb2312'), true);
+        $response = self::getInstance()->post('', $data);
+        $response = mb_convert_encoding($response, 'UTF-8', 'GB2312');
+        $result = json_decode($response, true);
         $responseName = str_replace('.', '_', $data['method']) . '_response';
         if (!isset($result['sign']) || !isset($result[$responseName]['code']) || $result[$responseName]['code'] != '10000') {
             throw new \Exception(sprintf("Alipay API Error: '%s'.", $result[$responseName]['msg'] . (isset($result[$responseName]['sub_code']) ? $result[$responseName]['sub_code'] : '')));
@@ -93,30 +95,26 @@ class Help
         return $sign;
     }
 
+
     /**
-     * @param array $params
-     * @param string $charset
+     * @param $params 待组合参数数组
+     * @param $charset 请求编码
+     * @param bool $verify 验证签名时 传true
      * @return string
      */
-    public static function getSignContent($params, $charset)
+    public static function getSignContent($params, $charset, $verify = false)
     {
         ksort($params);
         $stringToBeSigned = "";
-        $i = 0;
         foreach ($params as $k => $v) {
-            if (false === self::checkEmpty($v) && "@" != substr($v, 0, 1)) {
-                // 转换成目标字符集
-                $v = self::characet($v, $charset);
-                if ($i == 0) {
-                    $stringToBeSigned .= "$k" . "=" . "$v";
-                } else {
-                    $stringToBeSigned .= "&" . "$k" . "=" . "$v";
-                }
-                $i++;
+            if (!$verify && false === self::checkEmpty($v) && "@" != substr($v, 0, 1) && $k != 'sign') {
+                $stringToBeSigned .= $k . '=' . $v . '&';
+            }
+            if ($verify && $k != 'sign' && $k != 'sign_type') {
+                $stringToBeSigned .= $k . '=' . $v . '&';
             }
         }
-        unset ($k, $v);
-        return $stringToBeSigned;
+        return self::characet(trim($stringToBeSigned, '&'), $charset);
     }
 
     /**
@@ -198,7 +196,6 @@ class Help
         if (!$res) {
             throw new \Exception(sprintf("支付宝'%s'公钥错误。请检查公钥文件格式是否正确.", $signType));
         }
-        $data=mb_convert_encoding($data, 'gb2312', 'utf-8');
         if ("RSA2" == $signType) {
             $result = (bool)openssl_verify($data, base64_decode($sign), $res, OPENSSL_ALGO_SHA256);
         } else {
