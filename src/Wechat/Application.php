@@ -23,16 +23,16 @@ class Application
 {
     public $config = [];
 
-    public $appRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $h5Required = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'scene_info'];
-    public $microRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
-    public $miniRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $mpRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $scanRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
-    public $refundRequired = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
-    public $queryRequired = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id'];
-    public $closeRequired = ['appid', 'mch_id', 'key', 'out_trade_no'];
-    public $transferRequired = ['mch_appid', 'mchid', 'key', 'openid', 'check_name', 'amount', 'desc', 'partner_trade_no', 'cert', 'ssl_key'];
+    public $appRequired     = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $h5Required      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'scene_info'];
+    public $microRequired   = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
+    public $miniRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $mpRequired      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $scanRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
+    public $refundRequired  = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
+    public $queryRequired   = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id'];
+    public $closeRequired   = ['appid', 'mch_id', 'key', 'out_trade_no'];
+    public $transferRequired= ['mch_appid', 'mchid', 'key', 'openid', 'check_name', 'amount', 'desc', 'partner_trade_no', 'cert', 'ssl_key'];
 
     /**
      * Application constructor.
