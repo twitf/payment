@@ -23,15 +23,17 @@ class Application
 {
     public $config = [];
 
-    public $appRequired     = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $h5Required      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'scene_info'];
-    public $microRequired   = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
-    public $miniRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $mpRequired      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
-    public $scanRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
-    public $refundRequired  = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
-    public $queryRequired   = ['appid', 'mch_id', 'key','out_trade_no|transaction_id'];
-    public $closeRequired   = ['appid', 'mch_id', 'key','out_trade_no'];
+    public $appRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $h5Required = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'scene_info'];
+    public $microRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
+    public $miniRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $mpRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
+    public $scanRequired = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
+    public $refundRequired = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id', 'total_fee', 'out_refund_no', 'refund_fee', 'cert', 'ssl_key'];
+    public $queryRequired = ['appid', 'mch_id', 'key', 'out_trade_no|transaction_id'];
+    public $closeRequired = ['appid', 'mch_id', 'key', 'out_trade_no'];
+    public $transferRequired = ['mch_appid', 'mchid', 'key', 'openid', 'check_name', 'amount', 'desc', 'partner_trade_no', 'cert', 'ssl_key'];
+
     /**
      * Application constructor.
      * @param Config $config
@@ -89,14 +91,14 @@ class Application
         foreach ($this->$validateName as $value) {
             if (strpos($value, '|') !== false) {//多选一 参数
                 $value = explode('|', $value);
-                $errorLen=0;
-                foreach ($value as $_value){
-                    if (!ArrayHelp::exists($arguments, $_value)){
+                $errorLen = 0;
+                foreach ($value as $_value) {
+                    if (!ArrayHelp::exists($arguments, $_value)) {
                         $errorLen++;
                     }
                 }
-                if ($errorLen==count($value)) {
-                    throw new \Exception(sprintf("Config attribute '%s'  has at least one bottleneck.", implode(' and',$value)));
+                if ($errorLen == count($value)) {
+                    throw new \Exception(sprintf("Config attribute '%s'  has at least one bottleneck.", implode(' and ', $value)));
                 }
             } else {
                 if (!ArrayHelp::exists($arguments, $value)) {
@@ -127,6 +129,13 @@ class Application
         return $result;
     }
 
+    /**
+     * 查询订单
+     * @param $arguments
+     * @param bool $isReturn
+     * @return mixed
+     * @throws \Exception
+     */
     public function query($arguments, $isReturn = false)
     {
         $params = $this->initConfig('query', $arguments);
@@ -137,15 +146,39 @@ class Application
     }
 
     /**
-     *
+     *关闭订单
      * @param $arguments
      * @return mixed
      * @throws \Exception
      */
-    public function close($arguments){
+    public function close($arguments)
+    {
         $params = $this->initConfig('close', $arguments);
         $params['nonce_str'] = Help::getNonceStr();
         $result = Help::requestApi('pay/closeorder', $params, $this->config->get('key'));
+        return $result;
+    }
+
+    /**
+     * 企业转账到零钱
+     * @param $arguments
+     * @return mixed
+     * @throws \Exception
+     */
+    public function transfer($arguments)
+    {
+        if ($this->config->get('check_name') == 'FORCE_CHECK' && is_null($this->config->get('re_user_name'))) {
+            throw new \Exception("Config attribute 're_user_name' does not exist.");
+        }
+        $params = $this->initConfig('transfer', $arguments);
+        $params['nonce_str'] = Help::getNonceStr();
+        $params['spbill_create_ip'] = Help::getClientIp();
+        unset($params['cert']);
+        unset($params['ssl_key']);
+        $result = Help::requestApi('mmpaymkttransfers/promotion/transfers', $params, $this->config->get('key'), [
+            'cert' => $arguments['cert'],
+            'ssl_key' => $arguments['ssl_key']
+        ]);
         return $result;
     }
 

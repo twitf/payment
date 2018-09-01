@@ -96,7 +96,7 @@ class Application
                     }
                 }
                 if ($errorLen==count($value)) {
-                    throw new \Exception(sprintf("Config attribute '%s'  has at least one bottleneck.", implode(' and',$value)));
+                    throw new \Exception(sprintf("Config attribute '%s'  has at least one bottleneck.", implode(' and ',$value)));
                 }
             } else {
                 if (!ArrayHelp::exists($validateArray, $value)) {
