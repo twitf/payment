@@ -24,14 +24,14 @@ class Application
     //请求地址
     public $requestUrl = '';
 
-    public $appRequired      = ['app_id', 'merchant_private_key', 'alipay_public_key', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
-    public $wapRequired      = ['app_id', 'merchant_private_key', 'alipay_public_key', 'return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
-    public $pcRequired       = ['app_id', 'merchant_private_key', 'alipay_public_key', 'return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
-    public $refundRequired   = ['app_id', 'merchant_private_key', 'alipay_public_key', 'out_trade_no|trade_no', 'charset', 'sign_type', 'refund_amount'];
-    public $transferRequired = ['app_id', 'merchant_private_key', 'alipay_public_key', 'charset', 'sign_type', 'out_biz_no', 'payee_type', 'payee_account', 'amount'];
-    public $queryRequired    = ['app_id', 'merchant_private_key', 'alipay_public_key', 'charset', 'sign_type', 'out_trade_no|trade_no'];
-    public $closeRequired    = ['app_id', 'merchant_private_key', 'alipay_public_key', 'charset', 'sign_type', 'out_trade_no|trade_no'];
-    public $cancelRequired   = ['app_id', 'merchant_private_key', 'alipay_public_key', 'charset', 'sign_type', 'out_trade_no|trade_no'];
+    public $appRequired      = ['app_id', 'application_private_key', 'alipay_public_key', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
+    public $wapRequired      = ['app_id', 'application_private_key', 'alipay_public_key', 'return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
+    public $pcRequired       = ['app_id', 'application_private_key', 'alipay_public_key', 'return_url', 'notify_url', 'charset', 'sign_type', 'subject', 'out_trade_no', 'total_amount'];
+    public $refundRequired   = ['app_id', 'application_private_key', 'alipay_public_key', 'out_trade_no|trade_no', 'charset', 'sign_type', 'refund_amount'];
+    public $transferRequired = ['app_id', 'application_private_key', 'alipay_public_key', 'charset', 'sign_type', 'out_biz_no', 'payee_type', 'payee_account', 'amount'];
+    public $queryRequired    = ['app_id', 'application_private_key', 'alipay_public_key', 'charset', 'sign_type', 'out_trade_no|trade_no'];
+    public $closeRequired    = ['app_id', 'application_private_key', 'alipay_public_key', 'charset', 'sign_type', 'out_trade_no|trade_no'];
+    public $cancelRequired   = ['app_id', 'application_private_key', 'alipay_public_key', 'charset', 'sign_type', 'out_trade_no|trade_no'];
 
     /**
      * Application constructor.
@@ -120,7 +120,7 @@ class Application
         $config['version'] = '1.0';
         $config['timestamp'] = date('Y-m-d H:i:s', time());
         //清理请求无用的参数
-        unset($config['merchant_private_key']);
+        unset($config['application_private_key']);
         unset($config['alipay_public_key']);
         unset($config['mod']);
         return $config;
@@ -143,7 +143,7 @@ class Application
         $commonParams = $this->generateCommonParams($this->config->get());
         $commonParams['method'] = $isReturn ? 'alipay.trade.fastpay.refund.query' : 'alipay.trade.query';
         $commonParams['biz_content'] = json_encode($params);
-        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('merchant_private_key'), $this->config->get('sign_type'));
+        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('application_private_key'), $this->config->get('sign_type'));
         return Help::requestApi($this->requestUrl, $commonParams, $this->config->get('alipay_public_key'));
     }
 
@@ -159,7 +159,7 @@ class Application
         $commonParams = $this->generateCommonParams($this->config->get());
         $commonParams['method'] = 'alipay.trade.close';
         $commonParams['biz_content'] = json_encode($params);
-        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('merchant_private_key'), $this->config->get('sign_type'));
+        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('application_private_key'), $this->config->get('sign_type'));
         return Help::requestApi($this->requestUrl, $commonParams, $this->config->get('alipay_public_key'));
     }
 
@@ -177,7 +177,7 @@ class Application
         $commonParams = $this->generateCommonParams($this->config->get());
         $commonParams['method'] = 'alipay.trade.cancel';
         $commonParams['biz_content'] = json_encode($params);
-        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('merchant_private_key'), $this->config->get('sign_type'));
+        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('application_private_key'), $this->config->get('sign_type'));
         return Help::requestApi($this->requestUrl, $commonParams, $this->config->get('alipay_public_key'));
     }
 
@@ -195,7 +195,7 @@ class Application
         $commonParams = $this->generateCommonParams($this->config->get());
         $commonParams['method'] = 'alipay.trade.refund';
         $commonParams['biz_content'] = json_encode($params);
-        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('merchant_private_key'), $this->config->get('sign_type'));
+        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('application_private_key'), $this->config->get('sign_type'));
         return Help::requestApi($this->requestUrl, $commonParams, $this->config->get('alipay_public_key'));
     }
 
@@ -213,7 +213,7 @@ class Application
         $commonParams = $this->generateCommonParams($this->config->get());
         $commonParams['method'] = 'alipay.fund.trans.toaccount.transfer';
         $commonParams['biz_content'] = json_encode($params);
-        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('merchant_private_key'), $this->config->get('sign_type'));
+        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('application_private_key'), $this->config->get('sign_type'));
         return Help::requestApi($this->requestUrl, $commonParams, $this->config->get('alipay_public_key'));
     }
 

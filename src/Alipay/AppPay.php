@@ -29,7 +29,7 @@ class AppPay
         $commonParams['method'] = self::METHOD;
         $params['product_code'] = self::PRODUCT_CODE;
         $commonParams['biz_content'] = json_encode($params);
-        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('merchant_private_key'), $this->config->get('sign_type'));
+        $commonParams['sign'] = Help::makeSign(Help::getSignContent($commonParams, $this->config->get('charset')), $this->config->get('application_private_key'), $this->config->get('sign_type'));
         return $commonParams;
     }
 }
