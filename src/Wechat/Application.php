@@ -17,7 +17,6 @@ use twitf\Payment\Config;
  * @method \twitf\Payment\Wechat\MpPay mp(array $arguments) 公众号支付
  * @method \twitf\Payment\Wechat\ScanPay scan(array $arguments) 扫码支付
  * @method \twitf\Payment\Wechat\H5Pay h5(array $arguments) h5支付
- * @method \twitf\Payment\Wechat\MicroPay micro(array $arguments) 刷卡支付 _______目前没有接触过 待续
  */
 class Application
 {
@@ -25,7 +24,7 @@ class Application
 
     public $appRequired     = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
     public $h5Required      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'scene_info'];
-    public $microRequired   = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code'];
+    //public $microRequired   = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'auth_code']; 暂时没有接触 待续
     public $miniRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
     public $mpRequired      = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url'];
     public $scanRequired    = ['appid', 'mch_id', 'key', 'body', 'out_trade_no', 'total_fee', 'notify_url', 'product_id'];
@@ -184,15 +183,14 @@ class Application
 
     /**
      * 验证签名
-     * @param $key
      * @return bool|mixed
      * @throws \Exception
      */
-    public function verify($key)
+    public function verify()
     {
         $xml = file_get_contents("php://input");
         $notify = Help::xmlToArray($xml);
-        if (Help::makeSign($notify, $key) === $notify['sign']) {
+        if (Help::makeSign($notify, $this->config->get('key')) === $notify['sign']) {
             if ($notify['return_code'] != 'SUCCESS' || $notify['result_code'] != 'SUCCESS') {
                 throw new \Exception(sprintf("Wechat Notify Error '%s'.", $notify['return_msg'] . (isset($notify['err_code_des']) ? ':' . $notify['err_code_des'] : '')));
             }

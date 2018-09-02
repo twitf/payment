@@ -56,8 +56,10 @@ class Application
         return $this->make($name, $arguments[0]);
     }
 
+
     /**
      * @param $name
+     * @param $arguments
      * @return mixed
      * @throws \Exception
      */
@@ -77,8 +79,9 @@ class Application
 
     /**
      * 验证必传参数 返回业务参数
-     * @param $required
-     * @param Config $config
+     * @param $name
+     * @param $arguments
+     * @return mixed
      * @throws \Exception
      */
     public function initConfig($name, $arguments)
@@ -126,11 +129,12 @@ class Application
         return $config;
     }
 
-
     /**
      * 查询订单
-     * @param $arguments
-     * @param $isReturn 是否是退款订单 默认false
+     * @param array $arguments
+     * @param bool $isReturn 是否是退款订单 默认false
+     * @return mixed
+     * @throws \Exception
      */
     public function query($arguments, $isReturn = false)
     {
@@ -150,6 +154,8 @@ class Application
     /**
      * 用于交易创建后，用户在一定时间内未进行支付，可调用该接口直接将未付款的交易进行关闭。
      * @param $arguments
+     * @return mixed
+     * @throws \Exception
      */
     public function close($arguments)
     {
@@ -166,10 +172,11 @@ class Application
     /**
      * 撤销订单
      * 只有发生支付系统超时或者支付结果未知时可调用撤销，其他正常支付的单如需实现相同功能请调用申请退款API
+     * @param $arguments
      * @return mixed
      * @throws \Exception
      */
-    public function cancel()
+    public function cancel($arguments)
     {
         //业务参数
         $params = $this->initConfig('cancel', $arguments);
@@ -219,14 +226,13 @@ class Application
 
     /**
      * 回调验证签名
-     * @param $params 回调参数数组
-     * @param $alipayPublicKey 支付宝公钥
+     * @param array $params 回调参数数组
      * @return bool
      * @throws \Exception
      */
-    public function verify($params,$alipayPublicKey)
+    public function verify($params)
     {
         $signContent = Help::getSignContent($params, $params['charset'], true);
-        return Help::verifySign($signContent, $params['sign'], $alipayPublicKey, $params['sign_type']);
+        return Help::verifySign($signContent, $params['sign'], $this->config->get('alipayPublicKey'), $params['sign_type']);
     }
 }

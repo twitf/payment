@@ -65,7 +65,7 @@ class Help
 
     /**
      * @param $data 待签名字符串
-     * @param $privateKey 商户私钥
+     * @param $privateKey 应用私钥
      * @param $signType 签名方式
      * @return string
      * @throws \Exception
@@ -97,8 +97,8 @@ class Help
 
 
     /**
-     * @param $params 待组合参数数组
-     * @param $charset 请求编码
+     * @param array $params 待组合参数数组
+     * @param string $charset 请求编码
      * @param bool $verify 验证签名时 传true
      * @return string
      */
@@ -114,7 +114,7 @@ class Help
                 $stringToBeSigned .= $k . '=' . $v . '&';
             }
         }
-        return self::characet(trim($stringToBeSigned, '&'), $charset);
+        return self::charset(trim($stringToBeSigned, '&'), $charset);
     }
 
     /**
@@ -136,10 +136,10 @@ class Help
     /**
      * 转换字符集编码
      * @param $data
-     * @param $targetCharset 要转换的编码
+     * @param string $targetCharset 要转换的编码
      * @return string
      */
-    public static function characet($data, $targetCharset)
+    public static function charset($data, $targetCharset)
     {
         if (!empty($data)) {
             if (strcasecmp('UTF-8', $targetCharset) != 0) {
@@ -154,16 +154,19 @@ class Help
         return strtolower(pathinfo($name, PATHINFO_EXTENSION));
     }
 
+
     /**
      * 建立请求，以表单HTML形式构造（默认）
-     * @param $params 请求参数数组
-     * @return 提交表单HTML文本
+     * @param $url
+     * @param array $params 请求参数数组
+     * @param string $charset 字符编码
+     * @return string 提交表单HTML文本
      */
     public static function buildRequestForm($url, $params, $charset)
     {
 
         $sHtml = "<form id='alipaysubmit' name='alipaysubmit' action='" . $url . "?charset=" . trim($charset) . "' method='POST'>";
-        while (list ($key, $val) = each($params)) {
+        foreach ($params as $key => $val){
             if (false === self::checkEmpty($val)) {
                 $val = str_replace("'", "&apos;", $val);
                 $sHtml .= "<input type='hidden' name='" . $key . "' value='" . $val . "'/>";
@@ -177,8 +180,8 @@ class Help
 
 
     /**
-     * @param $data 待验证的数组
-     * @param $sign 签名
+     * @param string $data 待验证的数组
+     * @param string $sign 签名
      * @param $PublicKey 支付宝公钥
      * @param string $signType 签名类型
      * @return bool
