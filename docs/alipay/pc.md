@@ -6,7 +6,7 @@
         'out_trade_no'=>'',
         'total_amount'=>''
     ];
-    Payment::alipay($config)->wap($pcOrder);
+    Payment::alipay($config)->pc($pcOrder);
 ```
 
 > 页面提交表单即可
