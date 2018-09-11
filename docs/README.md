@@ -2,6 +2,10 @@
 
 > Alipay and Wechat
 
+# 安装
+
+`composer require twitf/payment`
+
 ## 目录结构
 
 ```
