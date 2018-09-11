@@ -1,5 +1,8 @@
 # payment
 alipay,wechat
-#Install
+
+# Install
+
 `composer require twitf/payment`
+
 > 文档地址：https://twitf.github.io/payment/
